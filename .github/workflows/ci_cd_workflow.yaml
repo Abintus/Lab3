@@ -44,7 +44,7 @@ jobs:
            run: uv sync --group deployment
    
          - name: Download Model
-           run: bash src/scripts/download_artifacts.py
+           run: bash main.py --script download_artifacts.py
    
          - name: Export Model
-           run: bash src/scripts/export_model_to_onnx.py
+           run: bash main.py --script export_model_to_onnx.py

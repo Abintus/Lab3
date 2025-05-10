@@ -48,3 +48,6 @@ jobs:
    
          - name: Export Model
            run: uv run python main.py --script export
+
+         - name: Set up Docker Image
+           run: docker build -t polish-sentiment-app-onnx:latest .

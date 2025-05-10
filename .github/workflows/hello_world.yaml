@@ -1,9 +1,7 @@
 name: Hello World Workflow
 
 on: 
-  push:
-    branches:
-      - main
+  workflow_dispatch:  # Allows manual execution
 
 jobs:
   hello-world-job:
@@ -12,4 +10,3 @@ jobs:
     steps:
       - name: Print Hello World
         run: echo "Hello world!"
-

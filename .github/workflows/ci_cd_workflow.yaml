@@ -28,3 +28,23 @@ jobs:
 
          - name: Run PyTest
            run: uv run pytest tests
+           
+   deployment:
+       name: set_up_model
+       runs-on: ubuntu-latest
+       
+       steps:
+         - name: Checkout Repository
+           uses: actions/checkout@v4
+   
+         - name: Install uv
+           run: curl -fsSL https://raw.githubusercontent.com/astral-sh/uv/main/install.sh | sh
+   
+         - name: Install Deployment Dependencies
+           run: uv sync --group deployment
+   
+         - name: Download Model
+           run: bash scr/scripts/download_artifacts.py
+   
+         - name: Export Model
+           run: bash scr/scripts/export_model_to_onnx.py

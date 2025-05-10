@@ -1,58 +1,30 @@
-name: Full Workflow
+# our CI/CD workflow .yaml file
 
-on: 
-  workflow_dispatch:  # Allows manual execution
+name: CI/CD workflow
+
+on: workflow_dispatch
 
 jobs:
-  hello-world-job:
-    runs-on: ubuntu-latest
+   integration:
+      name: checks_and_tests
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout code repo
+           # this action clones current repository to the VM where our job is running
+           # https://github.com/actions/checkout
+           uses: actions/checkout@v4
 
-    steps:
-      - name: Print Hello World
-        run: echo "Hello world!"
+         - name: Setup uv
+           run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-  integration:
-    name: checks_and_tests
-    runs-on: ubuntu-latest
+         - name: Install dependencies
+           run: uv sync --group integration
 
-    steps:
-      - name: Checkout code repo
-        # This action clones the current repository to the VM where our job is running
-        # https://github.com/actions/checkout
-        uses: actions/checkout@v4
+         - name: Run ruff check
+           run: uv run ruff check
 
-      - name: Setup uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+         - name: Run pip-audit
+           run: uv run pip-audit --vulnerability-service pypi
 
-      - name: Install dependencies
-        run: uv sync --group integration
-
-      - name: Run ruff check
-        run: uv run ruff check
-
-      - name: Run pip-audit
-        run: uv run pip-audit --vulnerability-service pypi
-
-      - name: Run PyTest
-        run: uv run pytest tests
-
-  deployment:
-    name: set_up_model
-    runs-on: ubuntu-latest
-    needs: integration  # Ensures deployment runs after integration checks
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        run: curl -fsSL https://raw.githubusercontent.com/astral-sh/uv/main/install.sh | sh
-
-      - name: Install Deployment Dependencies
-        run: uv pip install -r requirements-deployment.txt
-
-      - name: Download Model
-        run: bash scripts/download_model.sh
-
-      - name: Export Model
-        run: bash scripts/export_model.sh
+         - name: Run PyTest
+           run: uv run pytest tests
